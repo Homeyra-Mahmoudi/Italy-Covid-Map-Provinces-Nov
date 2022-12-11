@@ -1,26 +1,3 @@
-// var AWS = require("aws-sdk");
-// var s3 = new AWS.S3({
-//     accessKeyId: "AKIAZUOJTNJQHEJYEJXY",
-//     secretAccessKey: "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"
-// });
-// s3.listBuckets( function(err, data){
-//     if (err) {
-//         console.log("Error", err)
-//     } else {
-//         console.log("success", data.Buckets)
-//     }
-// });
-// var bucketParams = {
-//     Bucket : "voice-speech-map-trial-version-1"
-// };
-// // Call S3 to obtain a list of the objects in the bucket
-// s3.listObjects(bucketParams, function(err, data) {
-//     if (err) {
-//       console.log("Error", err);
-//     } else {
-//       console.log("Success", data);
-//     }
-//   });
 var final_transcript = "";
 var recognizing = false;
 var ignore_onend;
