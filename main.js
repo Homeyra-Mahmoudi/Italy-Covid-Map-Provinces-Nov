@@ -12,6 +12,13 @@ var legendAnHoverDiv = document.getElementById("Legend-and-Hover");
 var minZoomLevel = 6;
 var mapDiv = document.getElementById("map");
 
+var segments = [];
+var colors = [];
+var paintTemplate = [];
+var layers = [];
+var classes = [];
+var pattern = [];
+
 function showAction2(responseText) {
   const chatSysmsg = `<div class="chat-message clearfix">
     <div id ="chat-message-content-sys" class="clearfix">
@@ -55,7 +62,127 @@ function showOptionBasemaps(Message,BasemapOptions) {
   chatBoxArea.scrollTop = chatBoxArea.scrollHeight - chatBoxArea.clientHeight;
 }
 
+//function for showing the color palette 
+function makeColorPalletes(Message, pallets){
+  let palletsList = ``;
+  pallets.forEach((pallet, i)=>{
+      let colors = ``;
+      pallet.colors.forEach((color, i)=>{
+          colors += `<span class="options" style="display: inline-block;width: 10px;height: 10px;background-color: ${color}"></span>&nbsp;`;
+      })
+      palletsList += `
+      <div class="b-color-palettes__item">
+          <span class="key-of-the-pallet"><strong>${pallet.name}</strong></span><br>
+          ${colors}
+      </div><br>`;
+  })
+  
+ 
+  return chatBoxArea.innerHTML += `
+  <div class="chat-message clearfix">
+      <div id="chat-message-content-sys" class="clearfix">
+      <span class="chat-time-sys">${new Date().toLocaleTimeString()}</span>
+      <h5>System</h5>
+      ${Message}
+      <br>
+      ${palletsList}
+      <br>
+      </div>
+  </div>`;
+  
+  
 
+}
+
+
+
+var colorpalletsOpt = [
+  {
+      "name": "BStreams",
+      "colors": [
+        "rgb(26, 35, 126)",
+        "rgb(48, 124, 16)",
+        "rgb(232, 234, 246)",
+        "rgb(175, 180, 43)",
+        "rgb(240, 244, 195)",
+        "rgb(240, 240, 241)",
+        "rgb(196, 69, 23)"
+      ]
+  },
+  {
+      "name": "Hot and cold",
+      "colors": [
+        "rgb(49, 54, 149)",
+        "rgb(90, 141, 192)",
+        "rgb(201, 231, 239)",
+        "rgb(254, 232, 157)",
+        "rgb(243, 119, 72)",
+        "rgb(227, 75, 52)",
+        "rgb(165, 0, 38)"
+      ]
+  },
+  {
+      "name": "Nature",
+      "colors": [
+        "rgb(194, 163, 38)",
+        "rgb(189, 198, 97)",
+        "rgb(76, 83, 67)",
+        "rgb(109, 112, 113)",
+        "rgb(33, 139, 158)",
+        "rgb(87, 130, 43)",
+        "rgb(172, 210, 237)"
+      ]
+  },
+  {
+      "name": "Fruit juice",
+      "colors": [
+        "rgb(166, 206, 227)",
+        "rgb(178, 223, 138)",
+        "rgb(227, 26, 29)",
+        "rgb(202, 178, 215)",
+        "rgb(177, 89, 40)",
+        "rgb(92, 107, 192)",
+        "rgb(219, 122, 74)"
+      ]
+  }, 
+  {
+      "name": "Magma",
+      "colors": [
+        "rgb(233, 208, 34)",
+        "rgb(233, 180, 30)",
+        "rgb(232, 138, 25)",
+        "rgb(231, 95, 20)",
+        "rgb(231, 53, 14)",
+        "rgb(230, 39, 13)",
+        "rgb(230, 11, 9)"
+      ]
+  },
+  {
+      "name": "Red to acid green",
+      "colors": [
+        "rgb(86, 0, 0)",
+        "rgb(102, 28, 9)",
+        "rgb(126, 69, 23)",
+        "rgb(151, 111, 37)",
+        "rgb(175, 152, 50)",
+        "rgb(183, 166, 55)",
+        "rgb(199, 194, 64)"
+      ]
+  },
+  {
+      "name": "Ice cold",
+      "colors": [
+        "rgb(41, 85, 138)",
+        "rgb(51, 98, 150)",
+        "rgb(66, 118, 170)",
+        "rgb(76, 132, 183)",
+        "rgb(134, 169, 203)",
+        "rgb(173, 194, 216)",
+        "rgb(213, 219, 230)"
+      ]
+  
+  }
+]
 
 function showPopUp(Title, subTitle) {
   const popup = `<div class="map-overlay" id="features">
@@ -72,20 +199,23 @@ function RemovePopup (){
   legendAnHoverDiv.removeChild(popup);
 }
 
-function addLegend() {
-  const leggend = `<div class="map-overlay" id="legend"></div>`;
+//defining the variables as global variable 
 
-  map.on("mousemove", (event) => {
-    const states = map.queryRenderedFeatures(event.point, {
-      layers: ["maine"],
-    });
-    console.log(states);
-    document.getElementById("pd").innerHTML = states.length
-      ? `<h3>${states[0].properties.reg_name_LOCAL}</h3><p><strong>had<em>${states[0].properties.total_case}</strong>total case of covide till 18/11/2022.</em></p>`
-      : `<p>Hover over a province!</p>`;
-    let PopUpDiv = document.getElementById("features");
-    PopUpDiv.scrollTop = PopUpDiv.scrollHeight - PopUpDiv.clientHeight;
-  });
+
+function addLegend() {
+  const leggend = `<div class="map-overlay" id="legend" style="left:25px;"></div>`;
+
+  // map.on("mousemove", (event) => {
+  //   const states = map.queryRenderedFeatures(event.point, {
+  //     layers: ["maine"],
+  //   });
+  //   console.log(states);
+  //   document.getElementById("pd").innerHTML = states.length
+  //     ? `<h3>${states[0].properties.reg_name_LOCAL}</h3><p><strong>had<em>${states[0].properties.total_case}</strong>total case of covide till 18/11/2022.</em></p>`
+  //     : `<p>Hover over a province!</p>`;
+  //   let PopUpDiv = document.getElementById("features");
+  //   PopUpDiv.scrollTop = PopUpDiv.scrollHeight - PopUpDiv.clientHeight;
+  // });
   legendAnHoverDiv.innerHTML += leggend;
   
 }
@@ -141,12 +271,125 @@ const HotandColdPalette = [
   "rgb(165, 0, 38)"
 ];
 
+const NaturePalette = [
+  "rgb(194, 163, 38)",
+  "rgb(225, 226, 137)",
+  "rgb(189, 198, 97)",
+  "rgb(187, 141, 133)",
+  "rgb(185, 85, 67)",
+  "rgb(76, 83, 67)",
+  "rgb(73, 118, 181)",
+  "rgb(24, 99, 35)",
+  "rgb(109, 112, 113)",
+  "rgb(71, 126, 136)",
+  "rgb(33, 139, 158)",
+  "rgb(190, 104, 38)",
+  "rgb(87, 130, 43)",
+  "rgb(153, 170, 56)",
+  "rgb(172, 210, 237)"
+]
+
+const FruitJuicePalette = [
+  "rgb(166, 206, 227)",
+  "rgb(31, 120, 181)",
+  "rgb(178, 223, 138)",
+  "rgb(51, 160, 45)",
+  "rgb(251, 154, 153)",
+  "rgb(227, 26, 29)",
+  "rgb(254, 191, 111)",
+  "rgb(255, 127, 0)",
+  "rgb(202, 178, 215)",
+  "rgb(106, 62, 154)",
+  "rgb(255, 255, 154)",
+  "rgb(177, 89, 40)",
+  "rgb(92, 107, 192)",
+  "rgb(103, 176, 61)",
+  "rgb(219, 122, 74)"
+]
+
+const CinderelaPalette = [
+  "rgb(82, 1, 47)",
+  "rgb(112, 1, 65)",
+  "rgb(142, 1, 82)",
+  "rgb(197, 27, 125)",
+  "rgb(222, 119, 175)",
+  "rgb(241, 182, 218)",
+  "rgb(253, 224, 240)",
+  "rgb(237, 237, 237)",
+  "rgb(231, 246, 208)",
+  "rgb(184, 225, 134)",
+  "rgb(127, 188, 65)",
+  "rgb(78, 146, 34)",
+  "rgb(39, 100, 25)",
+  "rgb(29, 74, 18)",
+  "rgb(19, 48, 12)"
+
+]
+
+const RedToAcidGreenPalette = [
+  "rgb(86, 0, 0)",
+  "rgb(94, 14, 5)",
+  "rgb(102, 28, 9)",
+  "rgb(110, 42, 14)",
+  "rgb(118, 55, 18)",
+  "rgb(126, 69, 23)",
+  "rgb(134, 83, 27)",
+  "rgb(143, 97, 32)",
+  "rgb(151, 111, 37)",
+  "rgb(159, 125, 41)",
+  "rgb(167, 139, 46)",
+  "rgb(175, 152, 50)",
+  "rgb(183, 166, 55)",
+  "rgb(191, 180, 59)",
+  "rgb(199, 194, 64)"
+]
+
+const MagmaPalette = [
+  "rgb(233, 208, 34)",
+  "rgb(233, 194, 32)",
+  "rgb(233, 180, 30)",
+  "rgb(232, 166, 29)",
+  "rgb(232, 152, 27)",
+  "rgb(232, 138, 25)",
+  "rgb(232, 124, 23)",
+  "rgb(232, 110, 22)",
+  "rgb(231, 95, 20)",
+  "rgb(231, 81, 18)",
+  "rgb(231, 67, 16)",
+  "rgb(231, 53, 14)",
+  "rgb(230, 39, 13)",
+  "rgb(230, 25, 11)",
+  "rgb(230, 11, 9)"
+
+]
+
+const IceCold = [
+  "rgb(41, 85, 138)",
+  "rgb(46, 91, 144)",
+  "rgb(51, 98, 150)",
+  "rgb(56, 105, 157)",
+  "rgb(61, 111, 163)",
+  "rgb(66, 118, 170)",
+  "rgb(71, 125, 176)",
+  "rgb(76, 132, 183)",
+  "rgb(95, 144, 189)",
+  "rgb(115, 156, 196)",
+  "rgb(134, 169, 203)",
+  "rgb(154, 181, 209)",
+  "rgb(173, 194, 216)",
+  "rgb(193, 206, 223)",
+  "rgb(213, 219, 230)"
+
+]
+
+
 
 //generate the color pallete
+// var colors = [];
 function generatePalette(palette, steps, shuffleColors) {
   const numColors = palette.length;
   const incr = numColors / steps
-  let colors = [];
+  
   if (shuffleColors) {
     colors[0] = palette[Math.floor(incr/2)]
     let sum = incr/2;
@@ -161,6 +404,7 @@ function generatePalette(palette, steps, shuffleColors) {
   }
   return colors
 }
+
 
 
 const shuffleColors = false;
@@ -186,7 +430,7 @@ dataset.sort(function(a,b){
 // console.log("56565",newpalette);
 
 function createSegments (palette,steps,data,method,shuffleColors) {
-  let colors = generatePalette(palette,steps, shuffleColors)
+  var colors = generatePalette(palette,steps, shuffleColors)
   let limits
   switch (method) {
     case "quantile": {
@@ -222,31 +466,28 @@ function createSegments (palette,steps,data,method,shuffleColors) {
 			//console.log('LIMITS',limits)
 		}
   }
-  limits = [null, ...limits.map(el => Math.floor(el)), null]
-	let segments = []
+  limits = [0 , ...limits.map(el => Math.floor(el))]
+	
 	for (let i=0; i<steps; i++) {
 		const item = {
       from: limits[i],
 			to: limits[i+1],
 			color: colors[i],
-			label: '',
+			// label: '',
 		}
 		segments.push(item)
 	}
   console.log(segments)
+  console.log("im a mess in variables",colors)
+  console.log(limits)
 	//this.logg && console.log('segments',JSON.parse(JSON.stringify(segments)))
 	console.log("man injam", colors)
   return segments
 }
 //calling the function for testing
-createSegments(BstreamsPalette,7,dataset,"logarithmic",shuffleColors);
 
 
-let paintTemplate = [
-  "linterploate",
-  ["linear"],
-  ["get","total_case"],
-  ]
+
 
 
 
@@ -464,37 +705,46 @@ function interpret(snippet) {
       //   };
       // },
     });
-
     map.addControl(geocoder);
-    loadCovidMap();
+    
+    segments =[];
+
+    createSegments(FruitJuicePalette,7,dataset,"logarithmic",shuffleColors);
+    console.log("segments are here 5555",segments)
+    paintTemplate = [ "interpolate",
+    ["linear"],
+    ["get", "total_case"],];
+    for (const segment of segments) {
+      paintTemplate.push(segment.from);
+      paintTemplate.push(segment.color);
+    }
+    console.log(paintTemplate)
+    pattern = [];
+    for (const segment of segments){
+      pattern.push(segment.color)
+    }
+    
+    classes = [];
+    for (const segment of segments) {
+      classes.push(segment.from+" _ "+segment.to)
+       
+    }
+    console.log("classes are here...",classes)
+    
+    loadCovidMap(paintTemplate,1);
     
 
-    let title = "The total case of covid per province";
-    let subtitle = "Hover over a province to see the total case of covid";
-    showPopUp(title, subtitle);
+    // let title = "The total case of covid per province";
+    // let subtitle = "Hover over a province to see the total case of covid";
+    // showPopUp(title, subtitle);
+    
     addLegend();
 
     //Initialize the steps
-    const layers = [
-      "0-12755",
-      "12755-225000",
-      "225000-450000",
-      "450000-675000",
-      "675000-900000",
-      "900000-1000000",
-      "1000000-1500000",
-    ];
+    layers = classes ;
 
     //Initialize the colors
-    const colors = [
-      "#E9D022",
-      "#e9d022",
-      "#E8981B",
-      "#E8981B",
-      "#E87C17",
-      "#E75F14",
-      "#E6270D",
-    ];
+    colors = pattern;
 
     // create legend
     const legend = document.getElementById("legend");
@@ -513,9 +763,577 @@ function interpret(snippet) {
       legend.appendChild(item);
     });
 
-    
+    //B streams
 
     //add information on the popup
+  }
+  if (snippet.search(/remove color map/i)  >=0 ){
+
+    map.off("load", '');
+    // map.setLayoutProperty('graduatedCovidMapIT', 'visibility', 'none')
+    map.removeLayer("graduatedCovidMapIT");
+    map.removeLayer("outline");
+    map.removeSource("maine");
+    RemoveLeggend();
+    RemovePopup();
+    segments = [];
+    colors = [];
+    paintTemplate = [];
+    layers = [];
+    classes = [];
+    pattern = [];
+
+
+    // map = new mapboxgl.Map({
+    //   container: "map", // container ID
+    //   style: style2, // style URL
+    //   center: [12.5674, 41.8719], // starting position [lng, lat]
+    //   zoom: 5, // starting zoom
+    //   projection: "globe", // display the map as a 3D globe
+    //   // transformRequest: (url) => {
+    //   //   return {
+    //   //     url: url +"&srs=3857",
+    //   //   };
+    //   // },
+    // });
+    
+    showAction2("The covid map of italy removed!")
+
+  } 
+  if (snippet.search(/change the color palette/i) >= 0) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      PaletteMessage = "The color palettes are:";
+      makeColorPalletes(PaletteMessage, colorpalletsOpt);
+      chatBoxArea.scrollTop = chatBoxArea.scrollHeight - chatBoxArea.clientHeight;
+    }
+  }
+  if (
+    snippet.search(/change the color palette to red to magma/i) >= 0 ||
+    snippet.search(/magma/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Magma");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(MagmaPalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      // map.setPaintProperty("graduatedCovidMapIT", 'fill-color', paintTemplate);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/change the color palette to red to B streams/i) >= 0 ||
+    snippet.search(/B streams/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to BStreams");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(BstreamsPalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/change the color palette to red to ice cold/i) >= 0 ||
+    snippet.search(/ice cold/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Ice cold");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(IceCold,7, dataset, "logarithmic", shuffleColors);classes
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/change the color palette to red to acid green/i) >= 0 ||
+    snippet.search(/red to acid green/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Red to acid");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(RedToAcidGreenPalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/change the color palette to fruit juice/i) >= 0 ||
+    snippet.search(/fruit juice/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Fruit juice");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(FruitJuicePalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/change the color palette to nature/i) >= 0 ||
+    snippet.search(/nature/i) >= 0 
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Nature");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(NaturePalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+  
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+        
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
+  }
+  if (
+    snippet.search(/Change the color palette to hot and cold/i) >= 0 ||
+    snippet.search(/hot and cold/i) >= 0 ||
+    snippet.search(/hot N cold/i) >= 0
+  ) {
+    if (map.getLayer("graduatedCovidMapIT")) {
+      showAction2("The color palette changed to Hot and cold");
+      map.setStyle(style2);
+      map = new mapboxgl.Map({
+        container: "map", // container ID
+        style: style2, // style URL
+        center: [12.5674, 41.8719], // starting position [lng, lat]
+        zoom: 5, // starting zoom
+        projection: "globe", // display the map as a 3D globe
+        // transformRequest: (url) => {
+        //   return {
+        //     url: url +"&srs=3857",
+        //   };
+        // },
+      });
+      map.addControl(geocoder);
+
+      segments = [];
+
+      createSegments(HotandColdPalette,7, dataset, "logarithmic", shuffleColors);
+      paintTemplate = [
+        "interpolate",
+        ["exponential", 1],
+        ["get", "total_case"],
+      ];
+      for (const segment of segments) {
+        paintTemplate.push(segment.from);
+        paintTemplate.push(segment.color);
+      }
+      console.log(paintTemplate);
+      pattern = [];
+      for (const segment of segments) {
+        pattern.push(segment.color);
+      }
+
+      classes = [];
+      for (const segment of segments) {
+        classes.push(segment.from + " _ " + segment.to);
+      }
+      console.log("classes are here...", classes);
+
+      ReLoadCovidMap(paintTemplate, 1);
+      if (document.getElementById("legend")) {
+        RemoveLeggend();
+        
+        //Initialize the steps
+        layers = classes;
+
+        //Initialize the colors
+        colors = pattern;
+
+        addLegend();
+        // create legend
+        legend = document.getElementById("legend");
+
+        layers.forEach((layer, i) => {
+          const color = colors[i];
+          const item = document.createElement("div");
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.backgroundColor = color;
+
+          const value = document.createElement("span");
+          value.innerHTML = `${layer}`;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        });
+      }
+    }
   }
   if (
     snippet.search(/hide legend/i) >=0 || 
@@ -528,33 +1346,38 @@ function interpret(snippet) {
   if (
     snippet.search(/show legend/i) >= 0 
   ){
-    addLegend();
+    
     showAction2("The legend showed.");
+    addLegend();
+    let pattern = [];
+    for (const segment of segments) {
+      pattern.push(segment.color);
+    }
+
+    let classes = [];
+    for (const segment of segments) {
+      classes.push(segment.from + " _ " + segment.to);
+    }
+    console.log("classes are here...", classes);
+    
+   
+
 
     //Initialize the steps
-    const layers = [
-      "0-12755",
-      "12755-225000",
-      "225000-450000",
-      "450000-675000",
-      "675000-900000",
-      "900000-1000000",
-      "1000000-1500000",
-    ];
+    let layers = classes ;
 
     //Initialize the colors
-    const colors = [
-      "#E9D022",
-      "#e9d022",
-      "#E8981B",
-      "#E8981B",
-      "#E87C17",
-      "#E75F14",
-      "#E6270D",
-    ];
+    let colors = pattern;
+    
+    console.log(segments)
+    console.log(layers)
+    console.log(colors)
+    console.log(classes)
+    console.log(pattern)
+ 
 
     // create legend
-    const legend = document.getElementById("legend");
+    legend = document.getElementById("legend");
 
     layers.forEach((layer, i) => {
       const color = colors[i];
@@ -570,13 +1393,14 @@ function interpret(snippet) {
       legend.appendChild(item);
     });
   }
+  //orders for the position of the legend 
   if (
     snippet.search(/change the position of the legend/i) >=0 ||
     snippet.search(/change the place of the legend/i) >=0  
   ) {
     if (document.getElementById("legend")) {
       
-      let leggendPositions = ["Bottom left", "Bottom right", "Up left", "Up right"];
+      let leggendPositions = ["Bottom left", "Bottom right", "Top left", "Top right"];
       let messageLegend = "The position of the legend can be:"
       console.log("man run shoodam...", leggendPositions);
       showOptionBasemaps(messageLegend, leggendPositions);
@@ -584,25 +1408,35 @@ function interpret(snippet) {
     }
     
   }
-
+  //change the position of the legend to the bottom left 
   if (snippet.search(/bottom left/i) >= 0) {
     if (document.getElementById("legend")) {
       let pos00 = document.getElementById("legend");
       pos00.style.removeProperty("right");
       pos00.style.removeProperty("top");
-      pos00.style.cssText += "left:0;bottom:0;";
+      pos00.style.cssText += "left:25px;bottom:0;";
     }
   }
-  if (snippet.search(/upright/i) >= 0) {
+  //change the position of the legend to the up left 
+  if (snippet.search(/top left/i) >= 0) {
     if (document.getElementById("legend")) {
       let pos02 = document.getElementById("legend");
       console.log(pos02);
       pos02.style.removeProperty("left");
       pos02.style.removeProperty("bottom");
-      pos02.style.cssText += "right:0;top:0;";
+      pos02.style.cssText += "left:25px!important;top:80px;!important;position:fixed!important;";
     }
   }
-
+  //change the position of the legend to the up right 
+  if (snippet.search(/top right/i) >= 0) {
+    if (document.getElementById("legend")) {
+      let pos02 = document.getElementById("legend");
+      console.log("helloooooo555",pos02);
+      pos02.style.removeProperty('left')
+      pos02.style.cssText += `right:0!important;top:80px!important;left:""!important;`;
+      pos02.style.cssText +="position:fixed!important;"
+    }
+  }
   if (
     snippet.search(/change the style of the map/i) >= 0 ||
     snippet.search(/change the base map/i) >= 0 ||
@@ -623,60 +1457,71 @@ function interpret(snippet) {
   }
 
   if (snippet.search(/streets/i) >= 0 || snippet.search(/street/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    } 
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      map.setLayoutProperty('graduatedCovidMapIT', 'visibility','visible')
+      map.setLayoutProperty('outline', 'visibility','visible')
+    }
+    //  else {
+    //   map.removeLayer("graduatedCovidMapIT");
+    //   map.removeLayer("outline");
+    //   map.removeSource("maine");
+    //   RemoveLeggend();
+    //   RemovePopup();
+    // }
     style2 = URLStyle(streets);
     map.setStyle(style2);
     showAction2("The base map changed to Street style");
+    
   }
 
   if (snippet.search(/outdoors/i) >= 0 || snippet.search(/outdoor/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    }
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      map.setLayoutProperty('graduatedCovidMapIT', 'visibility','visible')
+      map.setLayoutProperty('outline', 'visibility','visible')
+    } 
+    
     style2 = URLStyle(outdoor);
     map.setStyle(style2);
     showAction2("The base map changed to Outdoor style");
   }
 
   if (snippet.search(/light/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      ReLoadCovidMap(paintTemplate, 1);
     }
     style2 = URLStyle(light);
     map.setStyle(style2);
     showAction2("The base map changed to Light style");
+  
   }
 
   if (snippet.search(/dark/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    } 
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+     ReLoadCovidMap(paintTemplate, 1);
+    }
     style2 = URLStyle(dark);
     map.setStyle(style2);
     showAction2("The base map changed to Dark style");
+   
   }
+  
 
   if (snippet.search(/satellite/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    } 
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      ReLoadCovidMap(paintTemplate, 1);
+    }
     style2 = URLStyle(satellite);
     map.setStyle(style2);
     showAction2("The base map changed to satellite style");
   }
+  
 
   if (
     snippet.search(/satellite streets/i) >= 0 ||
     snippet.search(/satellite street/i) >= 0
   ) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    } else {
-      map.removeLayer("maine");
-      map.removeLayer("outline");
-      map.removeSource("maine");
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      ReLoadCovidMap(paintTemplate, 1);
     }
     style2 = URLStyle(streetSatellite);
     map.setStyle(style2);
@@ -684,12 +1529,8 @@ function interpret(snippet) {
   }
 
   if (snippet.search(/navigation day/i) >= 0) {
-    if (map.getSource("maine")) {
-      ReLoadCovidMap();
-    } else {
-      map.removeLayer("maine");
-      map.removeLayer("outline");
-      map.removeSource("maine");
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      ReLoadCovidMap(paintTemplate, 1);
     }
     style2 = URLStyle(navigationDay);
     map.setStyle(style2);
@@ -697,38 +1538,13 @@ function interpret(snippet) {
   }
 
   if (snippet.search(/navigation night/i) >= 0) {
-    if (map.getLayer("maine")) {
-      console.log("laye delete nashode")
-      ReLoadCovidMap();
+    if (map.getLayer("graduatedCovidMapIT") || map.getLayer("outline") || map.getSource("maine")) {
+      ReLoadCovidMap(paintTemplate, 1);
     }
     style2 = URLStyle(navigationNight);
     map.setStyle(style2);
     showAction2("The base map changed to Navigation night style");
   }
-
-  if (snippet.search(/remove color map/i)  >=0 ){
-
-    map.removeLayer("maine");
-    map.removeLayer("outline");
-    map.removeSource("maine");
-    RemoveLeggend();
-    RemovePopup();
-    // map = new mapboxgl.Map({
-    //   container: "map", // container ID
-    //   style: style2, // style URL
-    //   center: [12.5674, 41.8719], // starting position [lng, lat]
-    //   zoom: 5, // starting zoom
-    //   projection: "globe", // display the map as a 3D globe
-    //   // transformRequest: (url) => {
-    //   //   return {
-    //   //     url: url +"&srs=3857",
-    //   //   };
-    //   // },
-    // });
-    
-    showAction2("The covid map of italy removed!")
-
-  } 
 
   if (
     snippet.search(/zoom in/i) >= 0 ||
@@ -834,7 +1650,7 @@ function interpret(snippet) {
     }
 
     const searchTerm = snippet.substring(trimStartPos).trim(); //intialize the geocoding field
-    //showAction('Finding ' + searchTerm + '');
+
     showAction2("Finding " + searchTerm + "");
 
     const searchBox = document.getElementsByClassName(
@@ -872,7 +1688,7 @@ function getJSONP(url, success) {
   head.appendChild(script);
 }
 
-let style2 = URLStyle(outdoor);
+var style2 = URLStyle(outdoor);
 //intialize base map from mapbox
 mapboxgl.accessToken =
   "pk.eyJ1IjoiaG9tZXlyYW1haG1vdWRpIiwiYSI6ImNsOXBxN3h5MzB2dW0zb3M1bjA1M2c3cTAifQ.c74-2h9mTcQ__zI22yMGgg";
@@ -890,8 +1706,8 @@ let map = new mapboxgl.Map({
 });
 
 //defining the function for the covid map
-function loadCovidMap() {
-  map.on("load", () => {
+function loadCovidMap(x,y) {
+  map.once("load", () => {
     map.addSource("maine", {
       type: "geojson",
       data: "https://ceit92.ir/Province-italy-covid.geojson",
@@ -902,31 +1718,13 @@ function loadCovidMap() {
 
     // Add a new layer to visualize the polygon.
     map.addLayer({
-      id: "maine",
+      id: "graduatedCovidMapIT",
       type: "fill",
       source: "maine", // reference the data source
       layout: {},
       paint: {
-        "fill-color": [
-          "interpolate",
-          ["linear"],
-          ["get", "total_case"],
-          12755,
-          "#E9D022",
-          225000,
-          "#e9d022",
-          450000,
-          "#E8981B",
-          675000,
-          "#E8981B",
-          900000,
-          "#E87C17",
-          1000000,
-          "#E75F14",
-          1500000,
-          "#E6270D",
-        ], // blue color fill
-        "fill-opacity": 0.5,
+        "fill-color": x, // blue color fill
+        "fill-opacity":y,
       },
     });
     // Add a black outline around the polygon.
@@ -940,12 +1738,12 @@ function loadCovidMap() {
         "line-width": 1,
       },
     });
-    console.log("man run shodam");
+    console.log("man loadam");
   });
 }
 
-function ReLoadCovidMap() {
-  map.on('sourcedata', () => {
+function ReLoadCovidMap(m,n) {
+  map.once('sourcedata', () => {
     map.addSource("maine", {
       type: "geojson",
       data: "https://ceit92.ir/Province-italy-covid.geojson",
@@ -955,31 +1753,13 @@ function ReLoadCovidMap() {
 
     // Add a new layer to visualize the polygon.
     map.addLayer({
-      id: "maine",
+      id: "graduatedCovidMapIT",
       type: "fill",
       source: "maine", // reference the data source
       layout: {},
       paint: {
-        "fill-color": [
-          "interpolate",
-          ["linear"],
-          ["get", "total_case"],
-          12755,
-          "#E9D022",
-          225000,
-          "#e9d022",
-          450000,
-          "#E8981B",
-          675000,
-          "#E8981B",
-          900000,
-          "#E87C17",
-          1000000,
-          "#E75F14",
-          1500000,
-          "#E6270D",
-        ], // blue color fill
-        "fill-opacity": 0.5,
+        "fill-color":m, // blue color fill
+        "fill-opacity": n,
       },
     });
     // Add a black outline around the polygon.
@@ -995,7 +1775,7 @@ function ReLoadCovidMap() {
     });
     
     
-    console.log("man run shodam");
+    console.log("man reloadam");
   });
 }
 
