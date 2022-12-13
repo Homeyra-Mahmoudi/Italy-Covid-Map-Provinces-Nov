@@ -303,6 +303,21 @@ body.recognizing #live-chat h4:before {
     border-color: #C44517;
     pointer-events: auto;
     
+    
+}
+
+
+
+.key-of-the-pallete {
+    
+    display: inline-block;
+border-radius: 20%;
+width: 10px;
+height: 10px;
+margin-right: 5px;
+padding: 1px;
+padding-bottom: 2px;
+    
 }
 
 
@@ -346,8 +361,8 @@ box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 line-height: 18px;
 height: 150px;
 margin-bottom: 40px;
-width: 150px;
-left: 25px;
+width: 200px;
+
 }
 
 /* #legend ::before {
@@ -367,3 +382,16 @@ padding-bottom: 2px;
 /* .legend-key ::before{
     content: "";
 } */
+
+
+#key-palette {
+    
+display: inline-block;
+border-radius: 20%;
+width: 10px;
+height: 10px;
+margin-right: 5px;
+padding: 1px;
+padding-bottom: 2px;
+
+}
